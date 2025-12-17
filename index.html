@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALEX-FM // ULTIMATE MULTIVERSE RADIO 2008 VISTA EDITION</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-blue: #00f2ff;
+            --neon-pink: #ff00ea;
+            --glass: rgba(255, 255, 255, 0.1);
+            --vista-gradient: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        body {
+            background: radial-gradient(circle at center, #001a1a 0%, #000000 100%);
+            color: white;
+            font-family: 'Orbitron', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* 2008 Aesthetics */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.3), inset 0 0 15px rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        .chrome-text {
+            background: linear-gradient(to bottom, #fff 0%, #888 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 5px rgba(0,242,255,0.5));
+        }
+
+        .lcd-screen {
+            background: #002200;
+            color: #00ff00;
+            font-family: 'Courier Prime', monospace;
+            text-shadow: 0 0 5px #00ff00;
+            border: 3px solid #333;
+        }
+
+        .btn-vista {
+            background: linear-gradient(to bottom, #666, #222);
+            border: 1px solid #00f2ff;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .btn-vista:hover {
+            filter: brightness(1.3);
+            box-shadow: 0 0 15px var(--neon-blue);
+            transform: scale(1.02);
+        }
+
+        .btn-vista::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 50%;
+            background: rgba(255,255,255,0.1);
+            transform: skewX(-45deg);
+            transition: 0.5s;
+        }
+
+        .btn-vista:hover::after { left: 100%; }
+
+        /* Animations */
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scanline {
+            position: absolute;
+            width: 100%; height: 2px;
+            background: rgba(0, 255, 255, 0.2);
+            animation: scanline 4s linear infinite;
+        }
+
+        #loader {
+            position: fixed; inset: 0; background: black; z-index: 9999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .apology-banner {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
+            z-index: 1000; width: 80%; max-width: 600px;
+            background: linear-gradient(45deg, #ff0000, #aa0000);
+            border: 5px solid gold; padding: 2rem; text-align: center;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .apology-banner.show { transform: translate(-50%, -50%) scale(1); }
+
+        .easter-egg-gif {
+            position: fixed; bottom: 20px; right: 20px; width: 200px; display: none; z-index: 50;
+            border: 2px solid var(--neon-pink);
+        }
+    </style>
+</head>
+<body class="p-4 flex flex-col items-center">
+
+    <div id="loader">
+        <h1 class="text-4xl chrome-text mb-8">ALEX-FM BOOTING...</h1>
+        <div class="w-64 h-4 bg-gray-800 rounded-full overflow-hidden border border-cyan-400">
+            <div id="loader-bar" class="h-full bg-cyan-400 w-0 transition-all duration-300"></div>
+        </div>
+        <p id="loader-text" class="mt-4 lcd-screen p-2 text-xs">Initializing Multiverse Scanners...</p>
+    </div>
+
+    <header class="w-full max-w-7xl flex justify-between items-center mb-6 glass-panel p-4">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-full bg-cyan-500 shadow-[0_0_20px_cyan] animate-pulse"></div>
+            <h1 class="text-3xl chrome-text italic font-bold">ALEX-FM <span class="text-xs">v.2008.4.1</span></h1>
+        </div>
+        <div class="flex gap-4 text-[10px] uppercase">
+            <div class="lcd-screen p-2">UNIVERSE: <span id="uni-count">1 STATION</span></div>
+            <div class="lcd-screen p-2">CLICKS: <span id="click-count">0</span></div>
+            <div class="lcd-screen p-2">BIKE RPM: <span id="bike-rpm">0</span></div>
+            <div class="lcd-screen p-2">GUINNESS: <span id="beer-lvl">100%</span></div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 h-[70vh]">
+        
+        <section class="glass-panel p-4 flex flex-col gap-4 relative overflow-hidden">
+            <div class="scanline"></div>
+            <h2 class="text-cyan-400 text-sm border-b border-cyan-900 pb-2">MAIN_CONTROLLER</h2>
+            
+            <div class="lcd-screen p-4 h-24 flex flex-col justify-between">
+                <div class="text-xs marquee overflow-hidden whitespace-nowrap" id="track-info">CONNECTING TO MULTIVERSE...</div>
+                <div class="flex justify-between items-end">
+                    <span class="text-2xl" id="timer">00:00</span>
+                    <span class="text-[10px]" id="bitrate">96kbps / HLS</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-4 gap-2">
+                <button onclick="playRadio()" class="btn-vista p-2 col-span-2">PLAY</button>
+                <button onclick="pauseRadio()" class="btn-vista p-2">PAUSE</button>
+                <button onclick="playRadio()" class="btn-vista p-2">STOP</button>
+            </div>
+
+            <div class="flex flex-col gap-1 mt-4">
+                <label class="text-[8px]">VOLUME</label>
+                <input type="range" class="w-full accent-cyan-400" id="vol-slider" oninput="setVolume(this.value)">
+                <label class="text-[8px] mt-2">BALANCE (X-TREME)</label>
+                <input type="range" class="w-full accent-pink-500">
+            </div>
+
+            <div class="mt-auto">
+                <div class="flex flex-wrap gap-1">
+                    <button onclick="triggerAction('Shuffle')" class="btn-vista px-2 py-1 text-[8px]">SHUFFLE</button>
+                    <button onclick="triggerAction('Scan')" class="btn-vista px-2 py-1 text-[8px]">SCAN</button>
+                    <button onclick="triggerAction('Find')" class="btn-vista px-2 py-1 text-[8px]">FIND ALL</button>
+                    <button onclick="triggerAction('Mullet')" class="btn-vista px-2 py-1 text-[8px]">MULLET MODE</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-2 flex flex-col relative bg-black">
+            <div class="flex justify-between p-2 text-[10px] text-cyan-400">
+                <span>VISUALIZER_01</span>
+                <span id="vis-mode">MODE: MULLET PLASMA</span>
+            </div>
+            <canvas id="visualizer" class="w-full flex-grow"></canvas>
+            <div class="absolute bottom-4 left-4 right-4 flex justify-around">
+                <div class="w-16 h-16 border-2 border-dashed border-cyan-800 rounded-full animate-spin"></div>
+                <div class="w-16 h-16 border-2 border-dashed border-pink-800 rounded-full animate-spin-reverse"></div>
+            </div>
+        </section>
+
+        <section class="glass-panel p-4 flex flex-col overflow-hidden">
+            <h2 class="text-pink-400 text-sm border-b border-pink-900 pb-2 mb-2">STATION_EXPLORER</h2>
+            <div class="bg-black/50 p-2 mb-4 border border-cyan-500 flex gap-2">
+                <input type="text" placeholder="Search multiverse..." class="bg-transparent text-xs outline-none w-full">
+                <button onclick="triggerAction('Search')" class="text-xs text-cyan-400">GO</button>
+            </div>
+            <div id="playlist" class="flex-grow overflow-y-auto pr-2 custom-scrollbar text-[10px] space-y-1">
+                </div>
+        </section>
+    </main>
+
+    <footer class="w-full max-w-7xl mt-6 glass-panel p-2 text-[8px] flex justify-between uppercase text-gray-400">
+        <span>Status: <span id="status-text" class="text-green-400">Ready</span></span>
+        <span>Telemetry: Latitude 51.7520° N, Longitude 1.2577° W (Oxford Central)</span>
+        <span>Energy: Guinness-Powered Core</span>
+    </footer>
+
+    <div id="apology" class="apology-banner shadow-2xl">
+        <h2 class="text-3xl font-black mb-4">SYSTEM ERROR / TRAGEDY</h2>
+        <p id="apology-text" class="text-xl italic"></p>
+        <button onclick="closeApology()" class="mt-6 bg-white text-black px-6 py-2 font-bold hover:bg-yellow-400">I ACCEPT MY FATE</button>
+    </div>
+
+    <img id="egg-gif" src="" class="easter-egg-gif shadow-2xl" alt="Easter Egg">
+
+    <script>
+        const STREAM_URL = "https://as-hls-ww-live.akamaized.net/pool_81827798/live/ww/bbc_6music/bbc_6music.isml/bbc_6music-audio%3D96000.norewind.m3u8";
+        
+        let hls = new Hls();
+        const audio = new Audio();
+        const playlist = document.getElementById('playlist');
+        const apology = document.getElementById('apology');
+        const apologyText = document.getElementById('apology-text');
+        let clickCount = 0;
+
+        // Station List
+        const stations = [
+            "Ultra Shuffle (Definitely Not Rigged)", "Quantum Discovery", "Jericho Oxford Jazz", "Oxford Brookes Lo-Fi", 
+            "Breckon & Breckon Property Beats", "Guinness Smooth FM", "Mullet Rock 101", "Bicycle Bell Symphony", 
+            "Louis' Mystery Mix", "Football Chant Radio", "Vegetarian Grime", "Facebook Ads Error Noise", 
+            "Oxfordshire Speed Camera Alerts", "2008 Future Bass", "Premium Paid Station", "Night Drive (Oxford Bypass)",
+            "Eco Mode Silence", "Totally Legal Radio", "HD Audio-ish", "With Visuals (Lies)"
+        ];
+
+        // Apologies
+        const apologies = [
+            "Sadly, this is the only station available in the observable universe.",
+            "Unfortunately, the radio multiverse has collapsed into a single stylish singularity.",
+            "Regretfully, every other station was repossessed, deleted, or converted into a bicycle lane.",
+            "Apologies: the spectrum is on a one-station subscription plan.",
+            "Tragic update: the cosmos hit 'shuffle' and landed on BBC 6 Music forever.",
+            "Oxford Council has restricted all other frequencies to prioritize bike lane expansion.",
+            "Which Louis? Doesn't matter. Only 6 Music remains."
+        ];
+
+        // 1. Initialization
+        window.onload = () => {
+            // Loader Logic
+            const phrases = ["Scanning Jericho...", "Checking Guinness Levels...", "Hiring Mullet Consultants...", "Brookes University Firewall Bypass..."];
+            let i = 0;
+            const loadInterval = setInterval(() => {
+                document.getElementById('loader-bar').style.width = i + "%";
+                if (i % 25 === 0) document.getElementById('loader-text').innerText = phrases[Math.floor(i/26)];
+                if (i >= 100) {
+                    clearInterval(loadInterval);
+                    document.getElementById('loader').style.display = 'none';
+                }
+                i += 2;
+            }, 50);
+
+            // Populate Playlist
+            stations.forEach(s => {
+                const div = document.createElement('div');
+                div.className = "p-2 bg-white/5 border border-white/10 hover:bg-cyan-500/20 cursor-pointer flex justify-between";
+                div.innerHTML = `<span>${s}</span><span class="text-cyan-600">OFFLINE</span>`;
+                div.onclick = () => triggerAction(s);
+                playlist.appendChild(div);
+            });
+
+            setupVisualizer();
+        };
+
+        // 2. Audio Logic
+        function playRadio() {
+            if (Hls.isSupported()) {
+                hls.loadSource(STREAM_URL);
+                hls.attachMedia(audio);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    audio.play();
+                    updateStatus("PLAYING");
+                });
+            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+                audio.src = STREAM_URL;
+                audio.play();
+                updateStatus("PLAYING");
+            }
+        }
+
+        function pauseRadio() {
+            audio.pause();
+            updateStatus("PAUSED");
+        }
+
+        function setVolume(v) { audio.volume = v / 100; }
+
+        function updateStatus(status) {
+            document.getElementById('status-text').innerText = status;
+            document.getElementById('track-info').innerText = status === "PLAYING" ? "BBC RADIO 6 MUSIC - NOW STREAMING FOREVER" : "IDLE";
+        }
+
+        // 3. The Core "Choice" Logic
+        function triggerAction(source) {
+            clickCount++;
+            document.getElementById('click-count').innerText = clickCount;
+            document.getElementById('bike-rpm').innerText = Math.floor(Math.random() * 120);
+
+            // Show Apology
+            apologyText.innerText = apologies[Math.floor(Math.random() * apologies.length)];
+            apology.classList.add('show');
+
+            // Play the only available station
+            playRadio();
+
+            // Easter Egg Logic
+            handleEasterEggs(source);
+        }
+
+        function handleEasterEggs(name) {
+            const egg = document.getElementById('egg-gif');
+            egg.style.display = 'none';
+            
+            if (name.includes("Mullet")) {
+                egg.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZ3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3AmbGNpZD1lbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKL9urUjC67S1BS/giphy.gif";
+                egg.style.display = 'block';
+            } else if (name.includes("Guinness") || name.includes("Beer")) {
+                egg.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZ3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3AmbGNpZD1lbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26vUwWvC4Uv6pWJ6U/giphy.gif";
+                egg.style.display = 'block';
+            }
+        }
+
+        function closeApology() {
+            apology.classList.remove('show');
+        }
+
+        // 4. Visualizer
+        function setupVisualizer() {
+            const canvas = document.getElementById('visualizer');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 600;
+            canvas.height = 300;
+
+            function draw() {
+                requestAnimationFrame(draw);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const time = Date.now() * 0.002;
+                
+                // Draw fake frequency bars
+                for (let i = 0; i < 40; i++) {
+                    const h = Math.sin(time + i) * 50 + 60;
+                    const hue = (i * 10 + time * 50) % 360;
+                    ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.8)`;
+                    ctx.fillRect(i * 15, canvas.height - h, 10, h);
+                    
+                    // Ghosting effect
+                    ctx.shadowBlur = 15;
+                    ctx.shadowColor = `hsla(${hue}, 100%, 50%, 0.8)`;
+                }
+
+                // Waveform
+                ctx.beginPath();
+                ctx.strokeStyle = '#00f2ff';
+                ctx.lineWidth = 2;
+                for(let x = 0; x < canvas.width; x++) {
+                    const y = Math.sin(x * 0.05 + time) * 20 + 150;
+                    if(x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+            }
+            draw();
+        }
+
+        // Timer
+        setInterval(() => {
+            if (!audio.paused) {
+                const s = Math.floor(audio.currentTime % 60);
+                const m = Math.floor(audio.currentTime / 60);
+                document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
