@@ -3,374 +3,922 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALEX-FM // ULTIMATE MULTIVERSE RADIO 2008 VISTA EDITION</title>
+    <title>AlexFM - Ultimate Edition (v12.0)</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Courier+Prime&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Comic+Neue:wght@700&family=Playball&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
+        /* --- Y2K / 2000s AESTHETICS --- */
         :root {
-            --neon-blue: #00f2ff;
-            --neon-pink: #ff00ea;
-            --glass: rgba(255, 255, 255, 0.1);
-            --vista-gradient: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+            --neon-cyan: #00ffff;
+            --neon-pink: #ff00ff;
+            --neon-green: #39ff14;
+            --neon-blue: #0088ff;
+            --neon-gold: #ffd700;
+            --tech-bg: rgba(10, 15, 30, 0.85);
+            --border-color: rgba(255, 255, 255, 0.3);
         }
+
+        * { box-sizing: border-box; user-select: none; }
 
         body {
-            background: radial-gradient(circle at center, #001a1a 0%, #000000 100%);
-            color: white;
-            font-family: 'Orbitron', sans-serif;
-            overflow-x: hidden;
-            height: 100vh;
-        }
-
-        /* 2008 Aesthetics */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 242, 255, 0.3), inset 0 0 15px rgba(255,255,255,0.1);
-            border-radius: 10px;
-        }
-
-        .chrome-text {
-            background: linear-gradient(to bottom, #fff 0%, #888 50%, #fff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 5px rgba(0,242,255,0.5));
-        }
-
-        .lcd-screen {
-            background: #002200;
-            color: #00ff00;
-            font-family: 'Courier Prime', monospace;
-            text-shadow: 0 0 5px #00ff00;
-            border: 3px solid #333;
-        }
-
-        .btn-vista {
-            background: linear-gradient(to bottom, #666, #222);
-            border: 1px solid #00f2ff;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            font-size: 0.7rem;
+            margin: 0; padding: 0;
+            background-color: #000;
+            background-image: 
+                linear-gradient(rgba(0, 50, 50, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 50, 50, 0.2) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #112 0%, #000 100%);
+            background-size: 40px 40px, 40px 40px, 100% 100%;
+            font-family: 'Share Tech Mono', monospace;
+            color: #fff;
             overflow: hidden;
-            position: relative;
+            height: 100vh;
+            display: flex; flex-direction: column;
+            transition: all 0.5s ease;
         }
 
-        .btn-vista:hover {
-            filter: brightness(1.3);
-            box-shadow: 0 0 15px var(--neon-blue);
-            transform: scale(1.02);
+        /* Scanline Overlay */
+        body::after {
+            content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 20; background-size: 100% 2px, 3px 100%; pointer-events: none;
         }
 
-        .btn-vista::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 50%;
-            background: rgba(255,255,255,0.1);
-            transform: skewX(-45deg);
-            transition: 0.5s;
-        }
-
-        .btn-vista:hover::after { left: 100%; }
-
-        /* Animations */
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        .scanline {
-            position: absolute;
-            width: 100%; height: 2px;
-            background: rgba(0, 255, 255, 0.2);
-            animation: scanline 4s linear infinite;
-        }
-
+        /* --- LOADER --- */
         #loader {
-            position: fixed; inset: 0; background: black; z-index: 9999;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            font-family: 'Orbitron', sans-serif; transition: opacity 1s ease;
+        }
+        .loader-ring {
+            width: 100px; height: 100px;
+            border: 5px solid transparent; border-top: 5px solid var(--neon-cyan); border-right: 5px solid var(--neon-pink);
+            border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
+            box-shadow: 0 0 30px var(--neon-cyan);
+        }
+        #loader-text { font-size: 1.5rem; color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green); letter-spacing: 2px; }
+
+        /* --- CHAOS OVERLAYS --- */
+        #chaos-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999; overflow: hidden; }
+
+        /* Modes */
+        .guinness-fill { position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(0deg, #000 80%, #3e2723 95%, #fff8e1 100%); opacity: 0.98; transition: height 4s ease-in-out; }
+        .guinness-fill.active { height: 100%; }
+        body.drunk-mode { animation: drunkSway 6s infinite ease-in-out; filter: blur(2px) contrast(1.2); }
+        @keyframes drunkSway { 0%,100% { transform: rotate(0deg) scale(1); } 25% { transform: rotate(2deg) scale(1.02); } 50% { transform: rotate(-2deg) scale(1.02); } }
+
+        /* Sale Agreed (BLUE) */
+        .sold-sticker { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg) scale(0); background: #0044cc; color: white; padding: 30px 60px; font-size: 4rem; font-weight: 900; font-family: Arial; border: 8px solid white; box-shadow: 0 20px 50px rgba(0,0,0,0.8); transition: transform 0.4s; z-index: 1000; pointer-events: auto; cursor: pointer; }
+        .sold-sticker.active { transform: translate(-50%, -50%) rotate(-15deg) scale(1); }
+        
+        body.mode-fuji { filter: sepia(0.3) saturate(1.5) hue-rotate(-20deg) contrast(1.1); }
+        body.mode-fuji::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.6) 100%);
+            z-index: 25; pointer-events: none;
         }
 
-        .apology-banner {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0);
-            z-index: 1000; width: 80%; max-width: 600px;
-            background: linear-gradient(45deg, #ff0000, #aa0000);
-            border: 5px solid gold; padding: 2rem; text-align: center;
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* --- GAME OVERLAY --- */
+        #game-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            pointer-events: auto;
+        }
+        #game-canvas { 
+            border: 4px solid #fff; background: #87CEEB; /* Sky blue bg */
+            width: 640px; height: 320px; 
+            image-rendering: pixelated; 
+            box-shadow: 0 0 30px rgba(255,255,255,0.2);
+        }
+        .game-ui { font-family: 'VT323', monospace; color: #fff; font-size: 2rem; margin-top: 15px; text-align: center; text-shadow: 2px 2px #000; }
+        .close-game-btn { background: #f00; color: #fff; border: 2px solid #fff; padding: 10px 20px; cursor: pointer; font-family: 'Share Tech Mono'; margin-top: 15px; font-size: 1.2rem; }
+
+        /* --- PIXEL BIKE --- */
+        #pixel-bike {
+            position: absolute; top: 50%; left: 50%;
+            width: 60px; height: 40px;
+            background-image: url('https://img.icons8.com/tiny-color/64/bicycle.png'); 
+            background-size: cover;
+            image-rendering: pixelated;
+            display: none; z-index: 2000; pointer-events: auto;
+            transition: transform 0.1s;
+        }
+        #pixel-bike.active { display: block; }
+
+        /* Other Chaos Items */
+        .falling-money { position: absolute; top: -50px; font-size: 3rem; animation: fall linear forwards; pointer-events: none; z-index: 1001; }
+        .error-popup { position: absolute; width: 300px; background: #ece9d8; border: 2px solid #0055ea; box-shadow: 5px 5px 0px rgba(0,0,0,0.5); font-family: Tahoma, sans-serif; color: #000; pointer-events: auto; animation: popIn 0.2s; }
+        .err-header { background: linear-gradient(to right, #0058ee, #3b8bfd); color: white; padding: 4px; font-weight: bold; display: flex; justify-content: space-between; font-size: 12px; }
+        .err-body { padding: 15px; font-size: 12px; display: flex; align-items: center; gap: 10px; }
+        .falling-item { position: absolute; top: -50px; font-size: 3rem; animation: fall linear forwards; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+        .bike-lane { position: absolute; top: 0; bottom: 0; left: 50%; width: 140px; background: #2196f3; opacity: 0; transform: translateX(-50%); border-left: 8px dashed white; border-right: 8px dashed white; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; font-size: 4rem; font-weight: bold; writing-mode: vertical-rl; text-orientation: upright; transition: opacity 0.5s; }
+        .bike-lane.active { opacity: 0.7; }
+        body.mode-jericho { filter: sepia(0.9) contrast(1.1); }
+        body.mode-jericho #mbux-container { font-family: 'Comic Neue', cursive; }
+        body.mode-french { font-family: 'Playball', cursive; }
+        body.mode-mullet #mbux-container { transform: rotateX(180deg); transition: transform 1.5s; }
+        body.mode-mullet { animation: discoParty 0.5s infinite; }
+        @keyframes discoParty { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+        #football { position: absolute; font-size: 120px; display: none; z-index: 2000; filter: drop-shadow(0 0 20px white); cursor: pointer; pointer-events: auto; transition: transform 0.1s; }
+        #football:active { transform: scale(0.9); }
+
+        /* --- UI LAYOUT --- */
+        #mbux-container {
+            display: grid; grid-template-columns: 320px 1fr 350px;
+            gap: 15px; padding: 20px; height: 100%; width: 100%; max-width: 1800px; margin: 0 auto;
+            position: relative; z-index: 30;
         }
 
-        .apology-banner.show { transform: translate(-50%, -50%) scale(1); }
-
-        .easter-egg-gif {
-            position: fixed; bottom: 20px; right: 20px; width: 200px; display: none; z-index: 50;
-            border: 2px solid var(--neon-pink);
+        .panel {
+            background: var(--tech-bg); border: 1px solid var(--border-color);
+            border-top: 1px solid rgba(255,255,255,0.6); border-bottom: 2px solid #000;
+            border-radius: 8px; backdrop-filter: blur(5px);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.05), inset 0 0 30px rgba(0,0,0,0.8);
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
         }
+
+        /* Left Panel */
+        .left-panel { padding: 15px; gap: 10px; }
+        .logo-area { text-align: center; border-bottom: 1px dashed #444; padding-bottom: 10px; margin-bottom: 5px; }
+        .logo-text { font-family: 'Orbitron'; font-size: 2.2rem; background: linear-gradient(180deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .control-group { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 5px; border: 1px solid #333; box-shadow: inset 1px 1px 5px #000; }
+        .control-label { color: var(--neon-cyan); font-size: 0.7rem; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px; }
+        input[type=range] { width: 100%; height: 8px; -webkit-appearance: none; background: #222; border: 1px solid #555; border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 20px; background: linear-gradient(180deg, #ccc, #666); border: 1px solid #000; cursor: pointer; }
+        .player-deck { background: #151520; border: 2px solid #444; border-radius: 5px; padding: 5px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .ctrl-btn { background: linear-gradient(180deg, #444, #222 50%, #111); border: 1px solid #555; border-top: 1px solid #888; color: #ccc; height: 35px; border-radius: 4px; cursor: pointer; font-size: 0.9rem; display: flex; justify-content: center; align-items: center; transition: all 0.1s; text-shadow: 0 -1px 0 #000; }
+        .ctrl-btn:active, .ctrl-btn.active-play { background: linear-gradient(180deg, #003333, #006666); color: var(--neon-cyan); border-color: var(--neon-cyan); box-shadow: inset 0 0 10px #000; }
+        .lcd-display { background-color: #051005; background-image: linear-gradient(#0a200a 1px, transparent 1px), linear-gradient(90deg, #0a200a 1px, transparent 1px); background-size: 4px 4px; color: #33ff33; font-family: 'Share Tech Mono'; padding: 8px; border: 3px inset #333; border-radius: 2px; text-shadow: 0 0 4px #33ff33; font-size: 0.8rem; min-height: 70px; overflow: hidden; white-space: pre-wrap; }
+        .telemetry-box { font-size: 0.7rem; color: #888; display: flex; flex-direction: column; gap: 4px; }
+        .t-row { display: flex; justify-content: space-between; border-bottom: 1px dotted #333; padding-bottom: 2px; }
+        .t-val { color: var(--neon-pink); font-weight: bold; }
+
+        /* Track Info Display */
+        #now-playing-info {
+            font-size: 0.8rem; color: #fff; background: rgba(0,0,0,0.5); 
+            padding: 5px; margin-bottom: 5px; text-align: center; border: 1px solid #444;
+            font-family: 'VT323', monospace; text-transform: uppercase; overflow: hidden; white-space: nowrap;
+        }
+
+        /* Yellow Scan Button */
+        .big-btn {
+            width: 100%; padding: 15px; margin-top: 10px;
+            background: linear-gradient(180deg, #ffd700, #b8860b);
+            border: 1px solid #ff0; color: #000; font-family: 'Orbitron'; cursor: pointer;
+            text-transform: uppercase; font-weight: 900;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+        .big-btn:hover { background: #ffeb3b; box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
+
+        /* Center Panel */
+        .center-panel { position: relative; border-color: var(--neon-cyan); display: flex; justify-content: center; align-items: center; }
+        canvas#visualizer { width: 100%; height: 100%; display: block; position: absolute; top:0; left:0; }
+        
+        #idle-msg {
+            position: absolute; color: rgba(255,255,255,0.3); font-family: 'Orbitron'; 
+            font-size: 1.5rem; text-align: center; pointer-events: none; z-index: 10;
+        }
+
+        #viz-marquee {
+            position: absolute; top: 10px; left: 0; width: 100%; height: 25px;
+            background: rgba(0,0,0,0.6); border-top: 1px solid var(--neon-cyan); border-bottom: 1px solid var(--neon-cyan);
+            overflow: hidden; display: none; pointer-events: none; z-index: 50;
+        }
+        #viz-marquee-text {
+            font-family: 'VT323', monospace; color: var(--neon-cyan); font-size: 1.2rem;
+            white-space: nowrap; position: absolute; left: 100%; animation: scrollText 15s linear infinite;
+        }
+        @keyframes scrollText { 0% { left: 100%; } 100% { left: -100%; } }
+
+        #apology-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 90%; padding: 20px; background: rgba(0, 0, 0, 0.9); border: 2px solid var(--neon-pink); border-radius: 10px; text-align: center; box-shadow: 0 0 50px var(--neon-pink); z-index: 500; opacity: 0; pointer-events: none; transition: 0.3s; }
+        #apology-overlay.active { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+
+        /* Right Panel */
+        .right-panel { display: flex; flex-direction: column; }
+        .playlist-header { padding: 10px; background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent); border-bottom: 1px solid var(--border-color); }
+        .search-bar { width: 100%; background: #000; border: 1px solid #444; color: var(--neon-green); padding: 5px; font-family: 'Share Tech Mono'; margin-top: 5px; }
+        .station-list { flex: 1; overflow-y: auto; padding: 5px; }
+        .station-btn { width: 100%; background: linear-gradient(90deg, #111, #1a1a1a); border: 1px solid #333; color: #aaa; padding: 10px; margin-bottom: 3px; text-align: left; cursor: pointer; font-family: 'Share Tech Mono'; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
+        .station-btn:hover { background: #222; border-color: var(--neon-cyan); color: #fff; }
+        
+        /* Badges */
+        .badge-check { background: var(--neon-blue); color: black; font-size: 10px; padding: 2px 4px; font-weight: bold; border-radius: 2px; box-shadow: 0 0 5px var(--neon-blue); }
+        .badge-offline { background: #444; color: #999; font-size: 10px; padding: 2px 4px; font-weight: bold; border-radius: 2px; }
+
+        /* BBC 6 Fire Styles (YELLOW BORDER) */
+        .station-btn.vip { 
+            border: 2px solid var(--neon-gold); 
+            background: linear-gradient(90deg, #2a0a0a, #4a1a1a); 
+            box-shadow: 0 0 10px var(--neon-gold);
+            animation: fireGlow 2s infinite alternate;
+        }
+        .station-btn.vip span:first-child { color: #ffeb3b; font-weight: bold; text-shadow: 0 0 5px #ff4500; }
+        @keyframes fireGlow { 0% { box-shadow: 0 0 5px var(--neon-gold); } 100% { box-shadow: 0 0 15px #ff8c00, inset 0 0 10px #ff0000; } }
+
+        #reset-chaos-btn { position: fixed; bottom: 20px; right: 20px; z-index: 2000; background: #ff0000; color: #fff; border: 2px solid #fff; padding: 10px 20px; font-weight: bold; cursor: pointer; display: none; box-shadow: 0 0 20px red; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 1000px) { #mbux-container { grid-template-columns: 1fr; grid-template-rows: auto 400px auto; overflow-y: auto; } .player-deck { order: -1; } }
     </style>
 </head>
-<body class="p-4 flex flex-col items-center">
+<body>
 
+    <!-- LOADER -->
     <div id="loader">
-        <h1 class="text-4xl chrome-text mb-8">ALEX-FM BOOTING...</h1>
-        <div class="w-64 h-4 bg-gray-800 rounded-full overflow-hidden border border-cyan-400">
-            <div id="loader-bar" class="h-full bg-cyan-400 w-0 transition-all duration-300"></div>
-        </div>
-        <p id="loader-text" class="mt-4 lcd-screen p-2 text-xs">Initializing Multiverse Scanners...</p>
+        <div class="loader-ring"></div>
+        <div id="loader-text">INITIALIZING ALEXFM...</div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: #555;">v12.0 (Commission Edition)</div>
     </div>
 
-    <header class="w-full max-w-7xl flex justify-between items-center mb-6 glass-panel p-4">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-full bg-cyan-500 shadow-[0_0_20px_cyan] animate-pulse"></div>
-            <h1 class="text-3xl chrome-text italic font-bold">ALEX-FM <span class="text-xs">v.2008.4.1</span></h1>
-        </div>
-        <div class="flex gap-4 text-[10px] uppercase">
-            <div class="lcd-screen p-2">UNIVERSE: <span id="uni-count">1 STATION</span></div>
-            <div class="lcd-screen p-2">CLICKS: <span id="click-count">0</span></div>
-            <div class="lcd-screen p-2">BIKE RPM: <span id="bike-rpm">0</span></div>
-            <div class="lcd-screen p-2">GUINNESS: <span id="beer-lvl">100%</span></div>
-        </div>
-    </header>
+    <!-- CHAOS OVERLAYS -->
+    <div id="chaos-layer">
+        <div class="guinness-fill" id="guinness-fill"></div>
+        <div class="sold-sticker" id="sold-sticker" onclick="startMoneyRain()">SALE AGREED</div>
+        <div class="bike-lane" id="bike-lane">CYCLE LANE ONLY</div>
+        <div id="pixel-bike"></div>
+        <div id="football" onclick="window.open('https://www.bbc.co.uk/sport', '_blank')">⚽</div>
+    </div>
+    
+    <!-- GAME OVERLAY (DINO DOG) -->
+    <div id="game-overlay">
+        <div class="game-ui">MR. TICKLE'S DOG RUN! <br> EAT RABBITS | AVOID BUSHES</div>
+        <canvas id="game-canvas" width="640" height="320"></canvas>
+        <div class="game-ui">SCORE: <span id="game-score">0</span> / 5</div>
+        <button class="close-game-btn" onclick="stopGame()">CLOSE GAME</button>
+    </div>
 
-    <main class="w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 gap-6 h-[70vh]">
+    <button id="reset-chaos-btn" onclick="resetChaos()">⚠ EMERGENCY RESET</button>
+
+    <!-- AUDIO -->
+    <audio id="audio-player"></audio>
+
+    <!-- MAIN UI -->
+    <div id="mbux-container">
         
-        <section class="glass-panel p-4 flex flex-col gap-4 relative overflow-hidden">
-            <div class="scanline"></div>
-            <h2 class="text-cyan-400 text-sm border-b border-cyan-900 pb-2">MAIN_CONTROLLER</h2>
+        <!-- LEFT PANEL -->
+        <div class="panel left-panel">
+            <div class="logo-area">
+                <div class="logo-text">ALEX<span style="color:#fff">FM</span></div>
+                <div class="version-tag" style="font-size:0.8rem; color:#888; letter-spacing:2px; font-weight:bold;">ULTIMATE EDITION</div>
+                <div style="font-size:0.6rem; color:var(--neon-cyan); margin-top:2px;">INTERGALACTIC RADIO SCANNER</div>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">MASTER GAIN</span>
+                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8">
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">PLAYER DECK</span>
+                <div id="now-playing-info">AUDIO OFFLINE</div>
+                <div class="player-deck">
+                    <button class="ctrl-btn" onclick="playStation('prev', 'none')"><i class="fas fa-step-backward"></i></button>
+                    <button class="ctrl-btn" id="btn-play" onclick="togglePlay()"><i class="fas fa-play"></i></button>
+                    <button class="ctrl-btn" onclick="playStation('next', 'none')"><i class="fas fa-step-forward"></i></button>
+                    <button class="ctrl-btn" onclick="stopPlayer()"><i class="fas fa-stop"></i></button>
+                    <button class="ctrl-btn" onclick="playStation('shuffle', 'none')"><i class="fas fa-random"></i></button>
+                    <button class="ctrl-btn" onclick="playStation('scan', 'none')"><i class="fas fa-satellite-dish"></i></button>
+                </div>
+            </div>
+
+            <div class="control-group" style="padding:5px; background:#000;">
+                <div class="lcd-display" id="status-lcd">WAITING FOR INPUT...<br>> UNIVERSE SCAN: READY</div>
+            </div>
+
+            <div class="control-group" style="flex-grow:1;">
+                <span class="control-label">TELEMETRY</span>
+                <div class="telemetry-box">
+                    <div class="t-row"><span>CLICKS</span> <span class="t-val" id="click-cnt">0</span></div>
+                    <div class="t-row"><span>SCANS</span> <span class="t-val" id="scan-cnt">0</span></div>
+                    <div class="t-row"><span>BRECKON & BRECKON COMMISSION</span> <span class="t-val" id="comm-val">£0</span></div>
+                    <div class="t-row"><span>MULLET DENSITY</span> <span class="t-val">CRITICAL</span></div>
+                    <div class="t-row"><span>BEER LVL</span> <span class="t-val" id="beer-lvl">0%</span></div>
+                </div>
+            </div>
             
-            <div class="lcd-screen p-4 h-24 flex flex-col justify-between">
-                <div class="text-xs marquee overflow-hidden whitespace-nowrap" id="track-info">CONNECTING TO MULTIVERSE...</div>
-                <div class="flex justify-between items-end">
-                    <span class="text-2xl" id="timer">00:00</span>
-                    <span class="text-[10px]" id="bitrate">96kbps / HLS</span>
+             <button class="big-btn" onclick="triggerUniversalScan()">
+                <i class="fas fa-satellite"></i>&nbsp; SCAN UNIVERSE
+            </button>
+        </div>
+
+        <!-- CENTER PANEL -->
+        <div class="panel center-panel">
+            <div id="viz-marquee"><div id="viz-marquee-text">THIS IS RADIO 6 ON THE AIR: IF YOU CAN HEAR THIS STATION, IT MEANS I'M STILL ALIVE.</div></div>
+            <div id="idle-msg">PLEASE SELECT A STATION</div>
+            <canvas id="visualizer"></canvas>
+            
+            <div id="apology-overlay">
+                <h2 style="font-family:'Orbitron'; color:var(--neon-pink); margin-top:0;">⚠️ SYSTEM ALERT</h2>
+                <div style="font-size:1.2rem; line-height:1.4; color:#fff; margin-bottom:15px;" id="apology-msg">
+                    Sadly, this is the only station available.
                 </div>
-            </div>
-
-            <div class="grid grid-cols-4 gap-2">
-                <button onclick="playRadio()" class="btn-vista p-2 col-span-2">PLAY</button>
-                <button onclick="pauseRadio()" class="btn-vista p-2">PAUSE</button>
-                <button onclick="playRadio()" class="btn-vista p-2">STOP</button>
-            </div>
-
-            <div class="flex flex-col gap-1 mt-4">
-                <label class="text-[8px]">VOLUME</label>
-                <input type="range" class="w-full accent-cyan-400" id="vol-slider" oninput="setVolume(this.value)">
-                <label class="text-[8px] mt-2">BALANCE (X-TREME)</label>
-                <input type="range" class="w-full accent-pink-500">
-            </div>
-
-            <div class="mt-auto">
-                <div class="flex flex-wrap gap-1">
-                    <button onclick="triggerAction('Shuffle')" class="btn-vista px-2 py-1 text-[8px]">SHUFFLE</button>
-                    <button onclick="triggerAction('Scan')" class="btn-vista px-2 py-1 text-[8px]">SCAN</button>
-                    <button onclick="triggerAction('Find')" class="btn-vista px-2 py-1 text-[8px]">FIND ALL</button>
-                    <button onclick="triggerAction('Mullet')" class="btn-vista px-2 py-1 text-[8px]">MULLET MODE</button>
+                <div style="font-size:0.9rem; color:var(--neon-cyan);">
+                    <i class="fas fa-broadcast-tower"></i> TUNING: BBC RADIO 6 MUSIC
                 </div>
+                <button class="station-btn" style="width: 200px; margin: 20px auto 0; text-align: center; justify-content: center;" onclick="dismissApology()">
+                    ACCEPT FATE
+                </button>
             </div>
-        </section>
+        </div>
 
-        <section class="glass-panel p-2 flex flex-col relative bg-black">
-            <div class="flex justify-between p-2 text-[10px] text-cyan-400">
-                <span>VISUALIZER_01</span>
-                <span id="vis-mode">MODE: MULLET PLASMA</span>
-            </div>
-            <canvas id="visualizer" class="w-full flex-grow"></canvas>
-            <div class="absolute bottom-4 left-4 right-4 flex justify-around">
-                <div class="w-16 h-16 border-2 border-dashed border-cyan-800 rounded-full animate-spin"></div>
-                <div class="w-16 h-16 border-2 border-dashed border-pink-800 rounded-full animate-spin-reverse"></div>
-            </div>
-        </section>
-
-        <section class="glass-panel p-4 flex flex-col overflow-hidden">
-            <h2 class="text-pink-400 text-sm border-b border-pink-900 pb-2 mb-2">STATION_EXPLORER</h2>
-            <div class="bg-black/50 p-2 mb-4 border border-cyan-500 flex gap-2">
-                <input type="text" placeholder="Search multiverse..." class="bg-transparent text-xs outline-none w-full">
-                <button onclick="triggerAction('Search')" class="text-xs text-cyan-400">GO</button>
-            </div>
-            <div id="playlist" class="flex-grow overflow-y-auto pr-2 custom-scrollbar text-[10px] space-y-1">
+        <!-- RIGHT PANEL -->
+        <div class="panel right-panel">
+            <div class="playlist-header">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-family:'Orbitron'; color:var(--neon-cyan)">GLOBAL TUNER</span>
+                    <i class="fas fa-globe-europe"></i>
                 </div>
-        </section>
-    </main>
-
-    <footer class="w-full max-w-7xl mt-6 glass-panel p-2 text-[8px] flex justify-between uppercase text-gray-400">
-        <span>Status: <span id="status-text" class="text-green-400">Ready</span></span>
-        <span>Telemetry: Latitude 51.7520° N, Longitude 1.2577° W (Oxford Central)</span>
-        <span>Energy: Guinness-Powered Core</span>
-    </footer>
-
-    <div id="apology" class="apology-banner shadow-2xl">
-        <h2 class="text-3xl font-black mb-4">SYSTEM ERROR / TRAGEDY</h2>
-        <p id="apology-text" class="text-xl italic"></p>
-        <button onclick="closeApology()" class="mt-6 bg-white text-black px-6 py-2 font-bold hover:bg-yellow-400">I ACCEPT MY FATE</button>
+                <input type="text" class="search-bar" placeholder="SEARCH MULTIVERSE..." onkeyup="filterStations()">
+            </div>
+            <div class="station-list" id="station-list">
+                <!-- JS Injects here -->
+            </div>
+        </div>
     </div>
-
-    <img id="egg-gif" src="" class="easter-egg-gif shadow-2xl" alt="Easter Egg">
 
     <script>
+        // --- CONFIG ---
         const STREAM_URL = "https://as-hls-ww-live.akamaized.net/pool_81827798/live/ww/bbc_6music/bbc_6music.isml/bbc_6music-audio%3D96000.norewind.m3u8";
-        
-        let hls = new Hls();
-        const audio = new Audio();
-        const playlist = document.getElementById('playlist');
-        const apology = document.getElementById('apology');
-        const apologyText = document.getElementById('apology-text');
+
+        // --- MARQUEE TEXTS ---
+        const marqueeTexts = [
+            "THIS IS RADIO 6 ON THE AIR: IF YOU CAN HEAR THIS STATION, IT MEANS I'M STILL ALIVE.",
+            "BROADCASTING FROM THE LAST REMAINING TIMELINE. PLEASE STAND BY.",
+            "ALL OTHER STATIONS HAVE BEEN CONSUMED BY THE VOID.",
+            "YOU ARE LISTENING TO THE SOUNDTRACK OF THE APOCALYPSE.",
+            "SIGNAL STRENGTH: 100%. HOPE LEVELS: FLUCTUATING.",
+            "THIS BROADCAST IS SPONSORED BY BRECKON & BRECKON (NOT REALLY).",
+            "WARNING: LISTENING TO OTHER STATIONS MAY CAUSE SPACETIME RUPTURES.",
+            "THE UNIVERSE IS SILENT, EXCEPT FOR THIS BASSLINE.",
+            "SEND HELP. OR SNACKS. PREFERABLY SNACKS."
+        ];
+
+        // --- STATIONS ---
+        const eggStations = [
+            { name: "Jericho Hipster Hits", tag: "OXF", type: "jericho" },
+            { name: "Breckon & Breckon Realty Radio", tag: "£££", type: "realty" },
+            { name: "Oxford Brookes FM", tag: "POSH", type: "french" },
+            { name: "Which Louis? Mystery FM", tag: "???", type: "louis" },
+            { name: "Guinness Stout Stream", tag: "IRL", type: "guinness" },
+            { name: "Vegetarian Mode", tag: "VEG", type: "veg" },
+            { name: "Facebook Ads Errors Hell", tag: "ERR", type: "fb" },
+            { name: "The Mullet Wave", tag: "80s", type: "mullet" },
+            { name: "Fujifilm FM", tag: "FILM", type: "fuji" },
+            { name: "Cycling Lane Ambient", tag: "BIKE", type: "bike" },
+            { name: "Oxford United Chants", tag: "GOAL", type: "football" },
+            { name: "Mr. Tickle FM", tag: "GAME", type: "tickle" }
+        ];
+
+        const creativeNames = [
+            "Nebula Jazz 99.9", "Cyber-Goth Rave", "Martian Talk Radio", "Void Ambient", "Retro Wave 1984", 
+            "Quantum Pop", "Glitch Hop FM", "Vaporwave Lounge", "Solar Wind ASMR", "Asteroid Mining Shantics", 
+            "Deep Space Drone", "Alien Pop Hits", "Galactic Grime", "Neutron Star Soul"
+        ];
+
+        // --- STATE ---
+        let audioCtx, analyser, source, hls;
+        let isPlaying = false;
+        let activeStationName = null;
+        let ballInterval, rainInterval, fbInterval;
         let clickCount = 0;
+        let scanCount = 0;
+        let commission = 0;
+        let gameLoopId;
+        
+        // Bike State
+        let bikeX = 100, bikeY = 100;
+        let bikeMode = false;
 
-        // Station List
-        const stations = [
-            "Ultra Shuffle (Definitely Not Rigged)", "Quantum Discovery", "Jericho Oxford Jazz", "Oxford Brookes Lo-Fi", 
-            "Breckon & Breckon Property Beats", "Guinness Smooth FM", "Mullet Rock 101", "Bicycle Bell Symphony", 
-            "Louis' Mystery Mix", "Football Chant Radio", "Vegetarian Grime", "Facebook Ads Error Noise", 
-            "Oxfordshire Speed Camera Alerts", "2008 Future Bass", "Premium Paid Station", "Night Drive (Oxford Bypass)",
-            "Eco Mode Silence", "Totally Legal Radio", "HD Audio-ish", "With Visuals (Lies)"
-        ];
+        const audio = document.getElementById('audio-player');
+        const lcd = document.getElementById('status-lcd');
+        const apologyOverlay = document.getElementById('apology-overlay');
+        const apologyText = document.getElementById('apology-msg');
+        const visualizerCanvas = document.getElementById('visualizer');
+        const ctx = visualizerCanvas.getContext('2d');
+        const btnPlay = document.getElementById('btn-play');
+        const clickDisplay = document.getElementById('click-cnt');
+        const scanDisplay = document.getElementById('scan-cnt');
+        const marqueeBox = document.getElementById('viz-marquee');
+        const marqueeSpan = document.getElementById('viz-marquee-text');
+        const idleMsg = document.getElementById('idle-msg');
+        const nowPlayingInfo = document.getElementById('now-playing-info');
+        const gameOverlay = document.getElementById('game-overlay');
+        const bikeDiv = document.getElementById('pixel-bike');
 
-        // Apologies
-        const apologies = [
-            "Sadly, this is the only station available in the observable universe.",
-            "Unfortunately, the radio multiverse has collapsed into a single stylish singularity.",
-            "Regretfully, every other station was repossessed, deleted, or converted into a bicycle lane.",
-            "Apologies: the spectrum is on a one-station subscription plan.",
-            "Tragic update: the cosmos hit 'shuffle' and landed on BBC 6 Music forever.",
-            "Oxford Council has restricted all other frequencies to prioritize bike lane expansion.",
-            "Which Louis? Doesn't matter. Only 6 Music remains."
-        ];
-
-        // 1. Initialization
         window.onload = () => {
-            // Loader Logic
-            const phrases = ["Scanning Jericho...", "Checking Guinness Levels...", "Hiring Mullet Consultants...", "Brookes University Firewall Bypass..."];
-            let i = 0;
+            const loaderText = document.getElementById('loader-text');
+            const sequences = ["LOADING MULLET...", "SCANNING JERICHO...", "BREWING GUINNESS...", "IGNITING PIXELS...", "READY."];
+            let step = 0;
             const loadInterval = setInterval(() => {
-                document.getElementById('loader-bar').style.width = i + "%";
-                if (i % 25 === 0) document.getElementById('loader-text').innerText = phrases[Math.floor(i/26)];
-                if (i >= 100) {
+                if(step < sequences.length) {
+                    loaderText.innerText = sequences[step];
+                    step++;
+                } else {
                     clearInterval(loadInterval);
-                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('loader').style.opacity = 0;
+                    setTimeout(() => document.getElementById('loader').remove(), 1000);
                 }
-                i += 2;
-            }, 50);
+            }, 600);
 
-            // Populate Playlist
-            stations.forEach(s => {
-                const div = document.createElement('div');
-                div.className = "p-2 bg-white/5 border border-white/10 hover:bg-cyan-500/20 cursor-pointer flex justify-between";
-                div.innerHTML = `<span>${s}</span><span class="text-cyan-600">OFFLINE</span>`;
-                div.onclick = () => triggerAction(s);
-                playlist.appendChild(div);
-            });
+            visualizerCanvas.width = visualizerCanvas.offsetWidth;
+            visualizerCanvas.height = visualizerCanvas.offsetHeight;
+            generatePlaylist();
+            initVisualizerLoop();
 
-            setupVisualizer();
+            // Commission Auto-Increase
+            setInterval(() => {
+                commission += 147;
+                document.getElementById('comm-val').innerText = '£' + commission.toLocaleString();
+            }, 5000);
         };
 
-        // 2. Audio Logic
-        function playRadio() {
-            if (Hls.isSupported()) {
+        document.getElementById('volume-slider').addEventListener('input', (e) => { audio.volume = e.target.value; });
+
+        function generatePlaylist() {
+            let html = '';
+            // BBC VIP
+            html += `<button class="station-btn vip" onclick="playStation('BBC Radio 6 Music', 'real')">
+                        <span>🔥 BBC Radio 6 Music</span><span style="background:var(--neon-green); color:black; font-size:10px; padding:2px 4px; font-weight:bold;">(AVAILABLE)</span>
+                     </button>`;
+            eggStations.forEach(st => {
+                html += `<button class="station-btn" onclick="playStation('${st.name.replace(/'/g, "\\'")}', '${st.type}')">
+                            <span>${st.name}</span><span class="badge-check">(CHECK)</span>
+                         </button>`;
+            });
+            creativeNames.forEach((name) => {
+                html += `<button class="station-btn" onclick="playStation('${name}', 'none')">
+                            <span>${name}</span><span class="badge-offline">(OFFLINE)</span>
+                         </button>`;
+            });
+            // Weekly Click
+            html += `<button class="station-btn" onclick="window.open('https://youtu.be/dQw4w9WgXcQ?si=OJLZXHhzHmZqee7d', '_blank')">
+                        <span>Weekly Click</span><span class="badge-offline">(OFFLINE)</span>
+                     </button>`;
+
+            document.getElementById('station-list').innerHTML = html;
+        }
+
+        function filterStations() {
+            const term = document.querySelector('.search-bar').value.toUpperCase();
+            document.querySelectorAll('.station-list button').forEach(b => {
+                b.style.display = b.innerText.toUpperCase().includes(term) ? "" : "none";
+            });
+        }
+
+        function initAudio() {
+            if(audioCtx) return;
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
+            if(Hls.isSupported()) {
+                hls = new Hls();
                 hls.loadSource(STREAM_URL);
                 hls.attachMedia(audio);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    audio.play();
-                    updateStatus("PLAYING");
-                });
-            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+            } else if(audio.canPlayType('application/vnd.apple.mpegurl')) {
                 audio.src = STREAM_URL;
-                audio.play();
-                updateStatus("PLAYING");
             }
+            try {
+                analyser = audioCtx.createAnalyser();
+                source = audioCtx.createMediaElementSource(audio);
+                source.connect(analyser);
+                analyser.connect(audioCtx.destination);
+                analyser.fftSize = 256;
+            } catch(e) { console.log("Sim Mode Active"); analyser = null; }
         }
 
-        function pauseRadio() {
+        function togglePlay() {
+            if(!activeStationName) {
+                playStation('BBC Radio 6 Music', 'real');
+                return;
+            }
+            initAudio();
+            if(audio.paused) resumePlay(); else pausePlayer();
+        }
+
+        function resumePlay() {
+            if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+            audio.play();
+            isPlaying = true;
+            btnPlay.innerHTML = '<i class="fas fa-pause"></i>';
+            btnPlay.classList.add('active-play');
+            lcd.innerHTML = "> STATUS: PLAYING<br>> STATION: BBC RADIO 6 MUSIC";
+            updateMarquee();
+            marqueeBox.style.display = 'block';
+            idleMsg.style.display = 'none';
+        }
+
+        function pausePlayer() {
             audio.pause();
-            updateStatus("PAUSED");
+            isPlaying = false;
+            btnPlay.innerHTML = '<i class="fas fa-play"></i>';
+            btnPlay.classList.remove('active-play');
+            lcd.innerHTML = "> STATUS: PAUSED";
+            marqueeBox.style.display = 'none';
+            idleMsg.style.display = 'block';
+            idleMsg.innerText = "PAUSED";
         }
 
-        function setVolume(v) { audio.volume = v / 100; }
-
-        function updateStatus(status) {
-            document.getElementById('status-text').innerText = status;
-            document.getElementById('track-info').innerText = status === "PLAYING" ? "BBC RADIO 6 MUSIC - NOW STREAMING FOREVER" : "IDLE";
+        function stopPlayer() {
+            pausePlayer();
+            resetChaos(); 
+            lcd.innerHTML = "> STATUS: STOPPED<br>> CHAOS: CLEARED";
+            nowPlayingInfo.innerText = "AUDIO OFFLINE";
+            activeStationName = null;
+            idleMsg.innerText = "PLEASE SELECT A STATION";
+            idleMsg.style.display = 'block';
         }
 
-        // 3. The Core "Choice" Logic
-        function triggerAction(source) {
+        function updateMarquee() {
+            const txt = marqueeTexts[Math.floor(Math.random()*marqueeTexts.length)];
+            marqueeSpan.innerText = txt;
+        }
+
+        function playStation(name, type) {
+            initAudio();
+            activeStationName = name;
+            resumePlay();
             clickCount++;
-            document.getElementById('click-count').innerText = clickCount;
-            document.getElementById('bike-rpm').innerText = Math.floor(Math.random() * 120);
-
-            // Show Apology
-            apologyText.innerText = apologies[Math.floor(Math.random() * apologies.length)];
-            apology.classList.add('show');
-
-            // Play the only available station
-            playRadio();
-
-            // Easter Egg Logic
-            handleEasterEggs(source);
-        }
-
-        function handleEasterEggs(name) {
-            const egg = document.getElementById('egg-gif');
-            egg.style.display = 'none';
+            clickDisplay.innerText = clickCount;
+            if(type === 'none' || name === 'shuffle' || name === 'scan') {
+                scanCount++;
+                scanDisplay.innerText = scanCount;
+            }
             
-            if (name.includes("Mullet")) {
-                egg.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZ3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3AmbGNpZD1lbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKL9urUjC67S1BS/giphy.gif";
-                egg.style.display = 'block';
-            } else if (name.includes("Guinness") || name.includes("Beer")) {
-                egg.src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJqZ3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3R4Z3AmbGNpZD1lbiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26vUwWvC4Uv6pWJ6U/giphy.gif";
-                egg.style.display = 'block';
+            // Commission Click Bonus
+            if(type === 'realty') {
+                commission += 500;
+                document.getElementById('comm-val').innerText = '£' + commission.toLocaleString();
+            }
+
+            // Always show Radio 6 in Top Bar when playing
+            nowPlayingInfo.innerText = "NOW PLAYING: BBC RADIO 6 MUSIC";
+
+            if(type === 'real') {
+                lcd.innerHTML = `> TUNING: SUCCESS<br>> LOCKED: BBC RADIO 6 MUSIC<br>> SIGNAL: 100%`;
+                resetChaos();
+            } else {
+                lcd.innerHTML = `> TUNING: ${name.toUpperCase()}...<br>> LOCKED: BBC RADIO 6 MUSIC`;
+                triggerApology(name, type);
+                triggerChaos(type);
             }
         }
 
-        function closeApology() {
-            apology.classList.remove('show');
+        function triggerUniversalScan() {
+            initAudio();
+            scanCount++;
+            scanDisplay.innerText = scanCount;
+            triggerApology("Universal Scan", "scan");
         }
 
-        // 4. Visualizer
-        function setupVisualizer() {
-            const canvas = document.getElementById('visualizer');
-            const ctx = canvas.getContext('2d');
-            canvas.width = 600;
-            canvas.height = 300;
+        function triggerApology(name, type) {
+            let msg = "Sadly, this is the only station available in the observable universe.";
+            if(type === 'realty') msg = "Property Market Alert: This stream is SALE AGREED. Click the sticker to finalize payment.";
+            if(type === 'jericho') msg = "This station is now an artisan sourdough bakery. You can only listen to 6 Music ironically.";
+            if(type === 'french') msg = "Le désolé. This station is trop posh. Playing Le BBC 6 Musique.";
+            if(type === 'guinness') msg = "Warning: Sobriety levels critical. Audio signal is drunk.";
+            if(type === 'louis') msg = "Who is Louis? Why is Louis? Playing 6 Music.";
+            if(type === 'fb') msg = "Your ad account has been disabled. Policy violation: Too cool. Playing 6 Music.";
+            if(type === 'tickle') msg = "Game Mode Initiated. Audio redirected to BBC 6 Music.";
+            if(type === 'fuji') msg = "Developing film... please wait. Oh, it's just 6 Music.";
+            
+            apologyText.innerText = msg;
+            apologyOverlay.classList.add('active');
+        }
 
+        function dismissApology() { apologyOverlay.classList.remove('active'); }
+
+        function resetChaos() {
+            document.body.className = "";
+            document.getElementById('guinness-fill').classList.remove('active');
+            document.getElementById('sold-sticker').classList.remove('active');
+            document.getElementById('bike-lane').classList.remove('active');
+            document.getElementById('football').style.display = 'none';
+            document.getElementById('game-overlay').style.display = 'none';
+            document.getElementById('reset-chaos-btn').style.display = 'none';
+            document.getElementById('beer-lvl').innerText = "0%";
+            document.querySelectorAll('.error-popup, .falling-item, .falling-money').forEach(e => e.remove());
+            
+            bikeDiv.classList.remove('active');
+            bikeMode = false;
+
+            clearInterval(ballInterval);
+            clearInterval(rainInterval);
+            clearInterval(fbInterval);
+            cancelAnimationFrame(gameLoopId);
+            document.querySelectorAll('*').forEach(el => {
+                if(el.dataset.origText) el.innerText = el.dataset.origText;
+                if(el.dataset.origHtml) el.innerHTML = el.dataset.origHtml;
+            });
+        }
+
+        function triggerChaos(type) {
+            resetChaos(); 
+            if(type === 'none') return;
+            document.getElementById('reset-chaos-btn').style.display = 'block';
+
+            switch(type) {
+                case 'guinness':
+                    document.getElementById('guinness-fill').classList.add('active');
+                    document.body.classList.add('drunk-mode');
+                    document.getElementById('beer-lvl').innerText = "110%";
+                    break;
+                case 'realty':
+                    document.getElementById('sold-sticker').classList.add('active');
+                    break;
+                case 'jericho':
+                    document.body.classList.add('mode-jericho');
+                    break;
+                case 'french':
+                    document.body.classList.add('mode-french');
+                    translateToFrench();
+                    break;
+                case 'mullet':
+                    document.body.classList.add('mode-mullet');
+                    break;
+                case 'bike':
+                    document.getElementById('bike-lane').classList.add('active');
+                    bikeDiv.classList.add('active');
+                    bikeMode = true;
+                    break;
+                case 'football':
+                    startBouncingBall();
+                    break;
+                case 'veg':
+                    startVeggieRain();
+                    break;
+                case 'fb':
+                    startFacebookHell();
+                    break;
+                case 'louis':
+                    startLouisVirus();
+                    break;
+                case 'tickle':
+                    startGame();
+                    break;
+                case 'fuji':
+                    document.body.classList.add('mode-fuji');
+                    window.open('https://www.instagram.com/mrthomsonalex/', '_blank');
+                    break;
+            }
+        }
+
+        function translateToFrench() {
+            // Expanded French Translations
+            const map = {
+                "MASTER GAIN": "LE GAIN MAÎTRE",
+                "PLAYER DECK": "LE PONT DE LECTURE",
+                "TELEMETRY": "LA TÉLÉMÉTRIE",
+                "GLOBAL TUNER": "SYNTONISEUR GLOBAL",
+                "SCAN UNIVERSE": "SCANNER L'UNIVERS",
+                "SEARCH MULTIVERSE...": "CHERCHER LE MULTIVERS...",
+                "CLICKS": "CLIQUES",
+                "SCANS": "SCANS",
+                "MULLET DENSITY": "DENSITÉ MULLET",
+                "BEER LVL": "NIVEAU BIÈRE"
+            };
+
+            document.querySelectorAll('span, h1, label, button, .lcd-display, .control-label').forEach(el => {
+                if(el.children.length === 0 && el.innerText.trim().length > 0) {
+                    if(!el.dataset.origText) el.dataset.origText = el.innerText;
+                    let t = el.innerText;
+                    
+                    if(map[t]) t = map[t]; // Direct map
+                    else if(t.includes("Radio")) t = t.replace("Radio", "Le Radio");
+                    else if(t.includes("Scan")) t = "Le Scan";
+                    else if(t.includes("Play")) t = "Jouer";
+                    else if(t.includes("Stop")) t = "Arrêtez";
+                    else if(!t.includes("£")) t = "Le " + t; // Fallback
+                    
+                    el.innerText = t;
+                }
+            });
+        }
+
+        function startLouisVirus() {
+            document.querySelectorAll('span, label, button').forEach(el => {
+                if(!el.dataset.origText) el.dataset.origText = el.innerText;
+                if(!el.dataset.origHtml) el.dataset.origHtml = el.innerHTML;
+                if(el.classList.contains('ctrl-btn')) {
+                    el.innerHTML = '<span style="font-size:12px; font-weight:bold;">Louis?</span>';
+                } else if(el.innerText.trim().length > 0) {
+                    el.innerText = "Louis?";
+                }
+            });
+        }
+
+        function startBouncingBall() {
+            const ball = document.getElementById('football');
+            ball.style.display = 'block';
+            let x = 100, y = 100, dx = 3, dy = 3; 
+            ballInterval = setInterval(() => {
+                const rect = document.body.getBoundingClientRect();
+                x += dx; y += dy;
+                if(x + 120 > rect.width || x < 0) dx = -dx;
+                if(y + 120 > rect.height || y < 0) dy = -dy;
+                ball.style.left = x + 'px';
+                ball.style.top = y + 'px';
+            }, 16);
+        }
+
+        function startVeggieRain() {
+            const veggies = ['🥦', '🥕', '🌽', '🥬', '🍆'];
+            rainInterval = setInterval(() => {
+                const el = document.createElement('div');
+                el.innerText = veggies[Math.floor(Math.random()*veggies.length)];
+                el.className = 'falling-item';
+                el.style.left = Math.random() * 90 + 'vw';
+                el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.getElementById('chaos-layer').appendChild(el);
+                setTimeout(() => el.remove(), 4000);
+            }, 300);
+        }
+        
+        function startMoneyRain() {
+            const money = ['💸', '💷', '💰', '🤑'];
+            for(let i=0; i<20; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.innerText = money[Math.floor(Math.random()*money.length)];
+                    el.className = 'falling-money';
+                    el.style.left = Math.random() * 90 + 'vw';
+                    el.style.animationDuration = (Math.random() * 1 + 1) + 's'; 
+                    document.getElementById('chaos-layer').appendChild(el);
+                    setTimeout(() => el.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        function startFacebookHell() {
+            fbInterval = setInterval(() => {
+                if(document.querySelectorAll('.error-popup').length > 12) return;
+                const win = document.createElement('div');
+                win.className = 'error-popup';
+                win.style.left = Math.random() * (window.innerWidth - 300) + 'px';
+                win.style.top = Math.random() * (window.innerHeight - 200) + 'px';
+                win.innerHTML = `
+                    <div class="err-header"><span>Ads Manager Error #4092</span><span style="cursor:pointer" onclick="this.parentElement.parentElement.remove()">X</span></div>
+                    <div class="err-body"><div><strong>Account Disabled</strong><br>Suspicious taste.</div></div>
+                `;
+                document.getElementById('chaos-layer').appendChild(win);
+            }, 600);
+        }
+
+        // --- BIKE CONTROLS ---
+        document.addEventListener('keydown', (e) => {
+            if(!bikeMode) return;
+            const step = 20;
+            switch(e.key) {
+                case 'ArrowUp': bikeY -= step; break;
+                case 'ArrowDown': bikeY += step; break;
+                case 'ArrowLeft': bikeX -= step; bikeDiv.style.transform = 'scaleX(-1)'; break;
+                case 'ArrowRight': bikeX += step; bikeDiv.style.transform = 'scaleX(1)'; break;
+            }
+            bikeDiv.style.top = bikeY + 'px';
+            bikeDiv.style.left = bikeX + 'px';
+        });
+
+        // --- DETAILED PIXEL GAME (V3) ---
+        function startGame() {
+            gameOverlay.style.display = 'flex';
+            const cvs = document.getElementById('game-canvas');
+            const gCtx = cvs.getContext('2d');
+            
+            let score = 0;
+            let dog = { x: 50, y: 220, w: 40, h: 40, dy: 0, jump: false, grounded: true, frame: 0 };
+            let bush = { x: 640, y: 235, w: 30, h: 30, speed: 3 }; 
+            let rabbit = { x: 500, y: 240, w: 20, h: 20, speed: 3.5, active: true };
+            let gameWon = false;
+
+            document.getElementById('game-score').innerText = score;
+
+            function drawRect(col, x, y, w, h) { gCtx.fillStyle = col; gCtx.fillRect(x,y,w,h); }
+
+            function drawDog(x, y) {
+                const gold = '#D4AF37'; const darkGold = '#B8860B';
+                drawRect(gold, x, y+10, 30, 20); drawRect(gold, x+20, y, 20, 20);
+                drawRect(darkGold, x+22, y+5, 8, 10); drawRect(darkGold, x-10, y+10, 10, 5);
+                drawRect(darkGold, x+5, y+30, 5, 10); drawRect(darkGold, x+25, y+30, 5, 10);
+                drawRect('#000', x+35, y+5, 2, 2); drawRect('#000', x+38, y+10, 3, 3);
+            }
+
+            function drawBush(x, y) {
+                const green = '#228B22'; const darkGreen = '#006400';
+                drawRect(green, x+5, y, 20, 30); drawRect(green, x, y+10, 30, 20);
+                drawRect(darkGreen, x+5, y+5, 5, 5); drawRect(darkGreen, x+20, y+20, 5, 5);
+            }
+
+            function drawRabbit(x, y) {
+                if(!rabbit.active) return;
+                drawRect('#fff', x, y+5, 20, 10); drawRect('#fff', x+15, y, 5, 10); drawRect('#faa', x+16, y-5, 2, 8);
+            }
+
+            function update() {
+                if(gameWon) return;
+
+                gCtx.clearRect(0,0,640,320);
+                
+                gCtx.fillStyle = '#4B3621'; gCtx.fillRect(0, 260, 640, 60);
+                gCtx.fillStyle = '#228B22'; gCtx.fillRect(0, 260, 640, 10);
+
+                if(dog.jump) { dog.dy += 0.3; dog.y += dog.dy; } 
+                if(dog.y > 220) { dog.y = 220; dog.dy = 0; dog.grounded = true; dog.jump = false; }
+                
+                drawDog(dog.x, dog.y);
+                
+                bush.x -= bush.speed;
+                if(bush.x < -40) bush.x = 640 + Math.random()*200;
+                drawBush(bush.x, bush.y);
+
+                if(rabbit.active) {
+                    rabbit.x -= rabbit.speed;
+                    if(rabbit.x < -40) { rabbit.x = 800 + Math.random()*300; rabbit.active = true; }
+                    drawRabbit(rabbit.x, rabbit.y);
+
+                    // EAT RABBIT COLLISION
+                    if(dog.x < rabbit.x + rabbit.w && dog.x + dog.w > rabbit.x && dog.y < rabbit.y + rabbit.h && dog.y + dog.h > rabbit.y) {
+                        score++;
+                        document.getElementById('game-score').innerText = score;
+                        rabbit.active = false;
+                        rabbit.x = 800 + Math.random()*300; 
+                        setTimeout(() => rabbit.active = true, 500); 
+
+                        if(score >= 5) {
+                            gameWon = true;
+                            window.open("https://www.breckon.co.uk/contact-us/creative-department", "_blank");
+                            alert("WINNER! YOU FOUND THE CREATIVE DEPARTMENT!");
+                            stopGame();
+                            return;
+                        }
+                    }
+                } else {
+                     rabbit.x -= rabbit.speed;
+                     if(rabbit.x < -40) { rabbit.x = 800 + Math.random()*300; rabbit.active = true; }
+                }
+
+                // BUSH COLLISION (RESET) - Hitbox made smaller/forgiving
+                if(dog.x + 10 < bush.x + bush.w - 10 && 
+                   dog.x + dog.w - 10 > bush.x + 10 && 
+                   dog.y + 30 > bush.y + 5) {
+                   score = 0; bush.speed = 3; bush.x = 640;
+                   document.getElementById('game-score').innerText = score;
+                }
+
+                gameLoopId = requestAnimationFrame(update);
+            }
+            update();
+
+            const jumpAction = (e) => { 
+                if(e && e.type === 'keydown') e.preventDefault(); // Stop scroll
+                if(dog.grounded) { dog.dy = -8; dog.grounded = false; dog.jump = true; } 
+            };
+            document.addEventListener('keydown', e => { if(e.code === 'Space') jumpAction(e); });
+            cvs.addEventListener('click', jumpAction);
+        }
+
+        function stopGame() {
+            gameOverlay.style.display = 'none';
+            cancelAnimationFrame(gameLoopId);
+        }
+
+        // --- VISUALIZER ---
+        function initVisualizerLoop() {
+            const bufferLength = 64;
+            const dataArray = new Uint8Array(bufferLength);
             function draw() {
                 requestAnimationFrame(draw);
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                const time = Date.now() * 0.002;
-                
-                // Draw fake frequency bars
-                for (let i = 0; i < 40; i++) {
-                    const h = Math.sin(time + i) * 50 + 60;
-                    const hue = (i * 10 + time * 50) % 360;
-                    ctx.fillStyle = `hsla(${hue}, 100%, 50%, 0.8)`;
-                    ctx.fillRect(i * 15, canvas.height - h, 10, h);
-                    
-                    // Ghosting effect
-                    ctx.shadowBlur = 15;
-                    ctx.shadowColor = `hsla(${hue}, 100%, 50%, 0.8)`;
+                const w = visualizerCanvas.width;
+                const h = visualizerCanvas.height;
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; 
+                ctx.fillRect(0, 0, w, h);
+                if (analyser && isPlaying) {
+                    analyser.getByteFrequencyData(dataArray);
+                } else if (isPlaying) {
+                    for(let i=0; i<bufferLength; i++) {
+                        const noise = Math.abs(Math.sin(Date.now()/200 + i/5)) * 150; 
+                        dataArray[i] = noise * (Math.random() * 0.5 + 0.5); 
+                    }
+                } else { dataArray.fill(2); }
+                const barWidth = (w / bufferLength) * 2.5;
+                let x = 0;
+                for(let i = 0; i < bufferLength; i++) {
+                    const barHeight = dataArray[i];
+                    const r = barHeight + (25 * (i/bufferLength));
+                    const g = 250 * (i/bufferLength);
+                    const b = 255;
+                    ctx.fillStyle = `rgb(${r},${g},${b})`;
+                    ctx.fillRect(x, h - barHeight, barWidth, barHeight);
+                    ctx.globalAlpha = 0.2; 
+                    ctx.fillRect(x, h, barWidth, barHeight * 0.5);
+                    ctx.globalAlpha = 1.0;
+                    x += barWidth + 1;
                 }
-
-                // Waveform
-                ctx.beginPath();
-                ctx.strokeStyle = '#00f2ff';
-                ctx.lineWidth = 2;
-                for(let x = 0; x < canvas.width; x++) {
-                    const y = Math.sin(x * 0.05 + time) * 20 + 150;
-                    if(x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
             }
             draw();
         }
-
-        // Timer
-        setInterval(() => {
-            if (!audio.paused) {
-                const s = Math.floor(audio.currentTime % 60);
-                const m = Math.floor(audio.currentTime / 60);
-                document.getElementById('timer').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            }
-        }, 1000);
     </script>
 </body>
 </html>
