@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlexFM - Ultimate Edition (v12.0)</title>
+    <title>AlexFM - Ultimate Edition (v13.0)</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Comic+Neue:wght@700&family=Playball&family=VT323&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,7 +32,7 @@
             background-size: 40px 40px, 40px 40px, 100% 100%;
             font-family: 'Share Tech Mono', monospace;
             color: #fff;
-            overflow: hidden;
+            overflow: hidden; /* Desktop default */
             height: 100vh;
             display: flex; flex-direction: column;
             transition: all 0.5s ease;
@@ -92,6 +92,7 @@
             width: 640px; height: 320px; 
             image-rendering: pixelated; 
             box-shadow: 0 0 30px rgba(255,255,255,0.2);
+            max-width: 95%; /* Responsive */
         }
         .game-ui { font-family: 'VT323', monospace; color: #fff; font-size: 2rem; margin-top: 15px; text-align: center; text-shadow: 2px 2px #000; }
         .close-game-btn { background: #f00; color: #fff; border: 2px solid #fff; padding: 10px 20px; cursor: pointer; font-family: 'Share Tech Mono'; margin-top: 15px; font-size: 1.2rem; }
@@ -143,8 +144,27 @@
 
         /* Left Panel */
         .left-panel { padding: 15px; gap: 10px; }
-        .logo-area { text-align: center; border-bottom: 1px dashed #444; padding-bottom: 10px; margin-bottom: 5px; }
+        .logo-area { text-align: center; border-bottom: 1px dashed #444; padding-bottom: 15px; margin-bottom: 5px; }
         .logo-text { font-family: 'Orbitron'; font-size: 2.2rem; background: linear-gradient(180deg, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 900; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        
+        /* UPDATED TAGLINE STYLE */
+        .intergalactic-tag {
+            font-size: 1.2rem; 
+            font-weight: 900; 
+            font-family: 'Orbitron';
+            text-transform: uppercase; 
+            margin-top: 8px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff, #ffff00, #00ffff);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: rainbow 5s linear infinite;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+            line-height: 1.1;
+        }
+        @keyframes rainbow { 0% {background-position: 0%;} 100% {background-position: 400%;} }
+
         .control-group { background: rgba(0,0,0,0.4); padding: 10px; border-radius: 5px; border: 1px solid #333; box-shadow: inset 1px 1px 5px #000; }
         .control-label { color: var(--neon-cyan); font-size: 0.7rem; margin-bottom: 5px; display: block; text-transform: uppercase; letter-spacing: 1px; }
         input[type=range] { width: 100%; height: 8px; -webkit-appearance: none; background: #222; border: 1px solid #555; border-radius: 2px; }
@@ -173,6 +193,17 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
         .big-btn:hover { background: #ffeb3b; box-shadow: 0 0 25px rgba(255, 215, 0, 0.7); }
+
+        /* Grey Shuffle Button */
+        .shuffle-btn {
+            width: 100%; padding: 12px; margin-top: 8px;
+            background: linear-gradient(180deg, #444, #222);
+            border: 1px solid #666; color: #aaa; font-family: 'Orbitron'; cursor: pointer;
+            text-transform: uppercase; font-weight: bold;
+            box-shadow: 0 0 5px rgba(255,255,255,0.1);
+        }
+        .shuffle-btn:hover { background: #555; color: #fff; border-color: #888; }
+
 
         /* Center Panel */
         .center-panel { position: relative; border-color: var(--neon-cyan); display: flex; justify-content: center; align-items: center; }
@@ -223,7 +254,29 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        @media (max-width: 1000px) { #mbux-container { grid-template-columns: 1fr; grid-template-rows: auto 400px auto; overflow-y: auto; } .player-deck { order: -1; } }
+        /* --- MOBILE OPTIMIZATION (SCROLLABLE) --- */
+        @media (max-width: 1000px) {
+            body { 
+                overflow-y: auto; 
+                height: auto; 
+                display: block; /* Remove flex container on body for simple scroll */
+            }
+            #mbux-container { 
+                display: flex; 
+                flex-direction: column; 
+                height: auto; 
+                overflow: visible; 
+            }
+            .panel { 
+                min-height: auto; 
+                margin-bottom: 20px; 
+                flex-shrink: 0;
+            }
+            .center-panel {
+                height: 400px; /* Specific height for visualizer on mobile */
+            }
+            .player-deck { order: 0; }
+        }
     </style>
 </head>
 <body>
@@ -232,7 +285,7 @@
     <div id="loader">
         <div class="loader-ring"></div>
         <div id="loader-text">INITIALIZING ALEXFM...</div>
-        <div style="margin-top: 10px; font-size: 0.8rem; color: #555;">v12.0 (Commission Edition)</div>
+        <div style="margin-top: 10px; font-size: 0.8rem; color: #555;">v13.0 (Shuffle Edition)</div>
     </div>
 
     <!-- CHAOS OVERLAYS -->
@@ -265,7 +318,7 @@
             <div class="logo-area">
                 <div class="logo-text">ALEX<span style="color:#fff">FM</span></div>
                 <div class="version-tag" style="font-size:0.8rem; color:#888; letter-spacing:2px; font-weight:bold;">ULTIMATE EDITION</div>
-                <div style="font-size:0.6rem; color:var(--neon-cyan); margin-top:2px;">INTERGALACTIC RADIO SCANNER</div>
+                <div class="intergalactic-tag">INTERGALACTIC RADIO SCANNER</div>
             </div>
 
             <div class="control-group">
@@ -303,6 +356,9 @@
             
              <button class="big-btn" onclick="triggerUniversalScan()">
                 <i class="fas fa-satellite"></i>&nbsp; SCAN UNIVERSE
+            </button>
+            <button class="shuffle-btn" onclick="triggerShuffle()">
+                <i class="fas fa-random"></i>&nbsp; SHUFFLE RADIO
             </button>
         </div>
 
@@ -568,10 +624,13 @@
         }
 
         function triggerUniversalScan() {
-            initAudio();
-            scanCount++;
-            scanDisplay.innerText = scanCount;
-            triggerApology("Universal Scan", "scan");
+            // Updated logic: Actually play the station (which falls back to 6 Music)
+            playStation('Universal Scan', 'scan');
+        }
+
+        function triggerShuffle() {
+            // Trigger Shuffle Apology
+            playStation('Shuffle Mode', 'shuffle_apology');
         }
 
         function triggerApology(name, type) {
@@ -584,6 +643,7 @@
             if(type === 'fb') msg = "Your ad account has been disabled. Policy violation: Too cool. Playing 6 Music.";
             if(type === 'tickle') msg = "Game Mode Initiated. Audio redirected to BBC 6 Music.";
             if(type === 'fuji') msg = "Developing film... please wait. Oh, it's just 6 Music.";
+            if(type === 'shuffle_apology') msg = "Shuffling frequencies... Random result: BBC Radio 6 Music (What are the odds?)";
             
             apologyText.innerText = msg;
             apologyOverlay.classList.add('active');
@@ -617,7 +677,7 @@
 
         function triggerChaos(type) {
             resetChaos(); 
-            if(type === 'none') return;
+            if(type === 'none' || type === 'scan' || type === 'shuffle_apology') return;
             document.getElementById('reset-chaos-btn').style.display = 'block';
 
             switch(type) {
